@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FishNPC : MonoBehaviour
+public class MantarayNPC : MonoBehaviour
 {
     public float swimSpeed = 2f; // ความเร็วพื้นฐานในการว่าย
     public float fleeSpeed = 5f; // ความเร็วในการว่ายหนี
@@ -14,14 +14,14 @@ public class FishNPC : MonoBehaviour
     private Vector3 targetPosition; // ตำแหน่งเป้าหมายที่ปลาจะว่ายไป
     private bool isFleeing = false; // สถานะว่ายหนี
     private Transform player; // ตัวผู้เล่น
-    private Vector3 currentVelocity; // ความเร็วปัจจุบัน
+    private Vector3 currentVelocity = Vector3.zero; // ความเร็วปัจจุบัน
 
     private void Start()
     {
         SetRandomTargetPosition();
 
-        // ค้นหาผู้เล่น
-        GameObject playerObject = GameObject.Find("PlayerController");
+        // ค้นหาผู้เล่นใน Scene
+        GameObject playerObject = GameObject.Find("PlayerController"); // เปลี่ยนชื่อให้ตรงกับ GameObject ผู้เล่น
         if (playerObject != null)
         {
             player = playerObject.transform;
@@ -63,6 +63,7 @@ public class FishNPC : MonoBehaviour
     {
         if (player == null) return;
 
+        // คำนวณทิศทางการหนี
         Vector3 fleeDirection = (transform.position - player.position).normalized;
         Vector3 fleeTarget = transform.position + fleeDirection * fleeSpeed;
 
@@ -73,6 +74,9 @@ public class FishNPC : MonoBehaviour
     {
         // คำนวณทิศทางการเคลื่อนที่
         Vector3 direction = (target - transform.position).normalized;
+
+        // เพิ่มการป้องกันกรณีเป้าหมายอยู่ใกล้มาก
+        if (Vector3.Distance(transform.position, target) < 0.01f) return;
 
         // อัพเดตความเร็วด้วยอัตราเร่ง
         currentVelocity = Vector3.Lerp(currentVelocity, direction * targetSpeed, acceleration * Time.deltaTime);
@@ -90,6 +94,7 @@ public class FishNPC : MonoBehaviour
 
     private void SetRandomTargetPosition()
     {
+        // เลือกตำแหน่งเป้าหมายแบบสุ่มในขอบเขต
         Vector3 randomDirection = Random.insideUnitSphere * swimAreaRadius;
         randomDirection.y = 0; // ล็อกแกน Y
         targetPosition = transform.position + randomDirection;
@@ -100,6 +105,7 @@ public class FishNPC : MonoBehaviour
 
     private Vector3 ClampPositionToSwimArea(Vector3 position)
     {
+        // จำกัดตำแหน่งให้อยู่ในรัศมีการว่ายน้ำ
         Vector3 center = transform.position;
         Vector3 direction = (position - center).normalized;
         float distance = Mathf.Min(Vector3.Distance(center, position), swimAreaRadius);
@@ -108,7 +114,7 @@ public class FishNPC : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        // แสดงขอบเขตการว่ายและการตรวจจับ
+        // แสดงขอบเขตการว่ายและการตรวจจับใน Scene View
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, swimAreaRadius);
 

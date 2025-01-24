@@ -5,6 +5,7 @@ public class PlayerMovement : MonoBehaviour
     public Animator animator;  // ตัวควบคุมแอนิเมชัน
     public Rigidbody rb;       // Rigidbody ของตัวละคร
     public float speed = 5f;   // ความเร็วการเคลื่อนที่
+    public ScoreManager score;
 
     void Update()
     {

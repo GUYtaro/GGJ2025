@@ -1,21 +1,25 @@
 ﻿using UnityEngine;
+using UnityEngine.UI; // สำหรับ UI Scrollbar
 
 public class PlayerHealth : MonoBehaviour
 {
-    public float maxHealth = 100f; // พลังชีวิตสูงสุด
-    private float currentHealth;  // พลังชีวิตปัจจุบัน
+    public float maxHealth = 100f;       // พลังชีวิตสูงสุด
+    public float currentHealth;          // พลังชีวิตปัจจุบัน
+    public Animator animator;            // ตัวควบคุมแอนิเมชัน
+    public GameObject deathEffect;       // เอฟเฟกต์เมื่อผู้เล่นตาย
 
-    public Animator animator;      // ตัวควบคุมแอนิเมชัน
-    public GameObject deathEffect; // เอฟเฟกต์เมื่อผู้เล่นตาย
+    [Header("UI")]
+    public Scrollbar healthBar;          // Scrollbar สำหรับแสดงพลังชีวิต
 
     void Start()
     {
-        currentHealth = maxHealth; // ตั้งค่าพลังชีวิตเริ่มต้น
+        currentHealth = maxHealth;       // ตั้งค่าเริ่มต้นให้พลังชีวิตเต็ม
+        UpdateHealthBar();               // อัปเดต Scrollbar
     }
 
     public void TakeDamage(float damage)
     {
-        currentHealth -= damage; // ลดพลังชีวิต
+        currentHealth -= damage;         // ลดพลังชีวิต
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // จำกัดค่าพลังชีวิตให้อยู่ในช่วง 0 ถึง maxHealth
 
         Debug.Log($"Player Health: {currentHealth}");
@@ -25,6 +29,18 @@ public class PlayerHealth : MonoBehaviour
         {
             Die();
         }
+
+        UpdateHealthBar(); // อัปเดต Scrollbar
+    }
+
+    public void Heal(float healAmount)
+    {
+        currentHealth += healAmount;     // ฟื้นฟูพลังชีวิต
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // จำกัดค่าพลังชีวิตให้อยู่ในช่วง 0 ถึง maxHealth
+
+        Debug.Log($"Player Healed: {currentHealth}");
+
+        UpdateHealthBar(); // อัปเดต Scrollbar
     }
 
     void Die()
@@ -47,10 +63,11 @@ public class PlayerHealth : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void Heal(float healAmount)
+    void UpdateHealthBar()
     {
-        currentHealth += healAmount;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // จำกัดไม่ให้เกิน maxHealth
-        Debug.Log($"Player Healed: {currentHealth}");
+        if (healthBar != null)
+        {
+            healthBar.size = currentHealth / maxHealth; // อัปเดต Scrollbar
+        }
     }
 }

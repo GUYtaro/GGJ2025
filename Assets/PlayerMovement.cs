@@ -46,7 +46,6 @@ public class PlayerMovement : MonoBehaviour
             regenTimer = 0f; // รีเซ็ตตัวจับเวลาฟื้นฟู Stamina
             rb.linearVelocity = movement * speed; // เคลื่อนที่
             animator.SetBool("swim", true);  // เปิดแอนิเมชันว่ายน้ำ
-            animator.SetBool("idle", false); // ปิดแอนิเมชัน Idle
         }
         else
         {
@@ -61,7 +60,6 @@ public class PlayerMovement : MonoBehaviour
             }
 
             animator.SetBool("swim", false); // ปิดแอนิเมชันว่ายน้ำ
-            animator.SetBool("idle", true);  // เปิดแอนิเมชัน Idle
         }
 
         // จำกัดค่า Stamina ให้อยู่ในช่วง 0 ถึง maxStamina

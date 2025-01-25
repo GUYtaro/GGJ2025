@@ -1,14 +1,18 @@
 ﻿using UnityEngine;
 
-public class EnemyAttack : MonoBehaviour
+public class attack : MonoBehaviour
 {
     public float damage = 20f; // ความเสียหายที่ศัตรูทำได้
     public float attackCooldown = 1.5f; // ระยะเวลาระหว่างการโจมตีแต่ละครั้ง
 
     private float lastAttackTime; // เวลาโจมตีครั้งล่าสุด
 
+    public GameObject currentObjec;
+
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other.gameObject);
+        currentObjec = other.gameObject;
         if (other.CompareTag("Player"))
         {
             TryAttack(other);

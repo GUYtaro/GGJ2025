@@ -3,14 +3,28 @@ using UnityEngine.UI;
 
 public class OxygenManager : MonoBehaviour
 {
-    public Slider oxygenSlider; // Slider สำหรับแสดงค่าอากาศหายใจ
-    public float oxygen = 100f; // ค่าอากาศหายใจเริ่มต้น
-    public float maxOxygen = 100f; // ค่าอากาศหายใจสูงสุด
-    public float oxygenDecreaseRate = 0.5f; // อัตราการลดลงของอากาศหายใจต่อวินาที
+    public static OxygenManager Instance; // Singleton สำหรับเข้าถึงจากที่อื่น
 
-    void Start()
+    public Slider oxygenSlider;  // Slider แสดงออกซิเจน
+    private float oxygen = 100f; // ค่าออกซิเจนเริ่มต้น
+    private float maxOxygen = 100f; // ค่าออกซิเจนสูงสุด
+    private float oxygenDepletionRate = 0.5f; // ลดออกซิเจน 0.5 ทุกวินาที
+
+    private void Awake()
     {
-        // ตั้งค่าเริ่มต้นของ Slider
+        // สร้าง Singleton
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void Start()
+    {
         if (oxygenSlider != null)
         {
             oxygenSlider.maxValue = maxOxygen;
@@ -18,29 +32,33 @@ public class OxygenManager : MonoBehaviour
         }
     }
 
-    void Update()
+    private void Update()
     {
-        // ลดค่าอากาศหายใจทุกวินาที
-        oxygen -= oxygenDecreaseRate * Time.deltaTime;
-        oxygen = Mathf.Clamp(oxygen, 0, maxOxygen); // จำกัดค่าให้อยู่ระหว่าง 0 และ maxOxygen
+        // ลดค่าออกซิเจนทุกวินาที
+        oxygen -= oxygenDepletionRate * Time.deltaTime;
+        oxygen = Mathf.Clamp(oxygen, 0, maxOxygen); // จำกัดค่าไม่ให้น้อยกว่า 0 หรือเกิน maxOxygen
 
-        // อัปเดต Slider
         if (oxygenSlider != null)
         {
             oxygenSlider.value = oxygen;
         }
+
+        if (oxygen <= 0)
+        {
+            Debug.Log("Player has run out of oxygen!");
+        }
     }
 
-    // ฟังก์ชันเพิ่มค่าอากาศหายใจ
     public void AddOxygen(float amount)
     {
         oxygen += amount;
-        oxygen = Mathf.Clamp(oxygen, 0, maxOxygen); // จำกัดไม่ให้เกิน maxOxygen
-    }
+        oxygen = Mathf.Clamp(oxygen, 0, maxOxygen); // จำกัดค่าออกซิเจนไม่ให้เกิน maxOxygen
 
-    // ฟังก์ชันตรวจสอบว่าอากาศหมดหรือไม่
-    public bool IsOxygenDepleted()
-    {
-        return oxygen <= 0;
+        if (oxygenSlider != null)
+        {
+            oxygenSlider.value = oxygen;
+        }
+
+        Debug.Log("Oxygen increased by: " + amount);
     }
 }

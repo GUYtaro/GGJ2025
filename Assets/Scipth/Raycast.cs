@@ -32,9 +32,18 @@ public class Raycast : MonoBehaviour
                     // เพิ่มคะแนนใน ScoreManager
                     ScoreManager.Instance.AddScore(1);
                 }
+                // ตรวจสอบว่า Object มีแท็ก "Bubble"
+                else if (hitInfo.collider.CompareTag("Bubble"))
+                {
+                    // ลบ Bubble ออก
+                    Destroy(hitInfo.collider.gameObject);
+
+                    // เพิ่มค่าออกซิเจน
+                    OxygenManager.Instance.AddOxygen(10f);
+                }
                 else
                 {
-                    Debug.Log("Object does not have the required tag: GGJ");
+                    Debug.Log("Object does not have the required tag: GGJ or Bubble");
                 }
             }
         }

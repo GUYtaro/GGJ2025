@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ public class RandomTrash : MonoBehaviour
     public GameObject[] possibleObjects; // Array เก็บ Object ที่สามารถเลือกได้
     public int numberOfObjects = 20;    // จำนวนวัตถุที่ต้องการสร้าง
     public Collider spawnArea;          // Collider สำหรับกำหนดพื้นที่สุ่ม
+    public float spawnInterval = 0.5f;  // ระยะเวลาระหว่างการสร้างแต่ละชิ้น
 
     private List<GameObject> spawnedObjects = new List<GameObject>(); // เก็บ Object ที่ถูกสร้างทั้งหมด
 
@@ -18,10 +20,16 @@ public class RandomTrash : MonoBehaviour
             return;
         }
 
-        // สร้างวัตถุแบบสุ่ม
+        // เริ่ม Coroutine เพื่อสร้างวัตถุทีละชิ้น
+        StartCoroutine(SpawnObjectsGradually());
+    }
+
+    IEnumerator SpawnObjectsGradually()
+    {
         for (int i = 0; i < numberOfObjects; i++)
         {
-            SpawnRandomObject();
+            SpawnRandomObject(); // สร้างวัตถุ
+            yield return new WaitForSeconds(spawnInterval); // รอเวลาที่กำหนดก่อนสร้างชิ้นถัดไป
         }
     }
 

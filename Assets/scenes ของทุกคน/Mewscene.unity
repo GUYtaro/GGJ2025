@@ -93,7 +93,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 20201, guid: 0000000000000000f000000000000000, type: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: a30e69ba93eb2714e900b7149fba1651, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -2635,6 +2635,7 @@ MonoBehaviour:
   regenDelay: 2
   minSpeedMultiplier: 0.5
   staminaBar: {fileID: 0}
+  rotationSpeed: 10
 --- !u!54 &1764602424
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3070,6 +3071,7 @@ MonoBehaviour:
   regenDelay: 2
   minSpeedMultiplier: 0.5
   staminaBar: {fileID: 0}
+  rotationSpeed: 10
 --- !u!136 &1910674023
 CapsuleCollider:
   m_ObjectHideFlags: 0

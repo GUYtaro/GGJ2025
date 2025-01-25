@@ -518,7 +518,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5dabad77c389b9e40a11760de1905c89, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.99558
+      value: 7.83
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5dabad77c389b9e40a11760de1905c89, type: 3}
       propertyPath: m_LocalRotation.w
@@ -839,7 +839,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 894948207}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
+  m_Avatar: {fileID: 9000000, guid: aafcc613d2b4a88419b55da1834c0ef1, type: 3}
   m_Controller: {fileID: 9100000, guid: ae87026384eb4634383cc291ed05247e, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
@@ -852,6 +852,50 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &894948210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 894948207}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fb5effcc1704b94cae9b5eee849171b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 5
+  walkZone: 100
+  camRig: {fileID: 0}
+  debug: 0
+  huntingZone: 50
+  layerFlock:
+    serializedVersion: 2
+    m_Bits: 0
+  sharkMaterial: {fileID: -1293887620268828351, guid: aafcc613d2b4a88419b55da1834c0ef1, type: 3}
+--- !u!114 &894948211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 894948207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e379512c8a2c1fa4baf399566c1ec7b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 2066735862}
+  followRange: 10
+  loseSightRange: 15
+  speedIncreaseRange: 5
+  wanderRadius: 5
+  wanderDelay: 3
+  wanderSpeed: 2
+  followSpeed: 3
+  speedMultiplier: 1.5
+  rotationSpeed: 2
+  Sharkanim: {fileID: 894948208}
 --- !u!1001 &965297399
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -874,7 +918,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: aafcc613d2b4a88419b55da1834c0ef1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.68
+      value: 3.7
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: aafcc613d2b4a88419b55da1834c0ef1, type: 3}
       propertyPath: m_LocalPosition.y
@@ -923,6 +967,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: aafcc613d2b4a88419b55da1834c0ef1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 894948208}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: aafcc613d2b4a88419b55da1834c0ef1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 894948210}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: aafcc613d2b4a88419b55da1834c0ef1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 894948211}
   m_SourcePrefab: {fileID: 100100000, guid: aafcc613d2b4a88419b55da1834c0ef1, type: 3}
 --- !u!1 &1467666541
 GameObject:
@@ -1410,8 +1460,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f610f9dd6fe6e846aff3d899169fba2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  score: {fileID: 0}
-  textDisplay: {fileID: 0}
+  score: {fileID: 224540805}
+  textDisplay: {fileID: 1802136761}
 --- !u!114 &1802136761
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1739,6 +1789,11 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!4 &2066735862 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5dabad77c389b9e40a11760de1905c89, type: 3}
+  m_PrefabInstance: {fileID: 661372731}
+  m_PrefabAsset: {fileID: 0}
 --- !u!54 &2066735864
 Rigidbody:
   m_ObjectHideFlags: 0

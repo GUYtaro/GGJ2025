@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MantarayNPC : MonoBehaviour
 {
+    public Animator Mantaray;  
     public float swimSpeed = 2f; // ความเร็วพื้นฐานในการว่าย
     public float fleeSpeed = 5f; // ความเร็วในการว่ายหนี
     public float acceleration = 2f; // อัตราเร่ง
@@ -36,12 +37,14 @@ public class MantarayNPC : MonoBehaviour
     {
         if (player != null && Vector3.Distance(transform.position, player.position) <= detectionRadius)
         {
+            Mantaray.SetBool("Fast", true);
             // หากอยู่ในระยะตรวจจับ ให้ว่ายหนี
             isFleeing = true;
             FleeFromPlayer();
         }
         else
         {
+            Mantaray.SetBool("Fast", false);
             // ว่ายแบบปกติ
             isFleeing = false;
             SwimNormally();

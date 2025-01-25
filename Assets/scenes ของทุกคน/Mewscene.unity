@@ -384,6 +384,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 068ecc46290ebd040a95c7ebaffa984e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  score: 0
 --- !u!4 &224540806
 Transform:
   m_ObjectHideFlags: 0
@@ -3285,6 +3286,7 @@ MonoBehaviour:
   regenDelay: 0.5
   minSpeedMultiplier: 0.5
   staminaBar: {fileID: 1369394688}
+  rotationSpeed: 10
 --- !u!114 &2066735866
 MonoBehaviour:
   m_ObjectHideFlags: 0

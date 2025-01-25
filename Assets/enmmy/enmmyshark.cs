@@ -1,70 +1,74 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-public class EnemyAIInWater : MonoBehaviour
+public class enemyShark : MonoBehaviour
 {
     [Header("Player Detection")]
-    public Transform player;
-    public float followRange = 10f;
-    public float loseSightRange = 15f;
+    public Transform player;               // ตำแหน่งของผู้เล่น
+    public float followRange = 10f;        // ระยะที่ศัตรูเริ่มตามผู้เล่น
+    public float loseSightRange = 15f;     // ระยะที่ศัตรูหยุดตามผู้เล่น
     public float speedIncreaseRange = 5f; // ระยะที่เพิ่มความเร็ว
 
     [Header("Wandering Behavior")]
-    public float wanderRadius = 5f;
-    public float wanderDelay = 3f;
-    public float wanderSpeed = 2f;
+    public float wanderRadius = 5f;        // ระยะการเดินสุ่ม
+    public float wanderDelay = 3f;         // เวลาระหว่างการสุ่มเป้าหมาย
+    public float wanderSpeed = 2f;         // ความเร็วการเดินสุ่ม
 
     [Header("Movement Settings")]
-    public float followSpeed = 3f;
-    public float speedMultiplier = 1.5f; // ตัวคูณความเร็วเมื่อใกล้ Player
-    public float rotationSpeed = 2f;
+    public float followSpeed = 3f;         // ความเร็วตามผู้เล่น
+    public float speedMultiplier = 1.5f;   // ตัวคูณความเร็วเมื่อใกล้ Player
+    public float rotationSpeed = 2f;       // ความเร็วการหมุนตัว
 
-    private Vector3 wanderTarget;
-    private float timeSinceLastWander;
-    private bool isFollowing = false;
-    private Vector3 currentVelocity; // ใช้สำหรับ SmoothDamp
+    [Header("Animation")]
+    public Animator Sharkanim;             // ตัวควบคุมแอนิเมชัน
 
-    private void Update()
+    private Vector3 wanderTarget;          // ตำแหน่งเป้าหมายสุ่มเดิน
+    private float timeSinceLastWander;     // เวลาเช็คการสุ่มเป้าหมาย
+    private bool isFollowing = false;      // กำลังตามผู้เล่นหรือไม่
+    private Vector3 currentVelocity;       // ใช้สำหรับ SmoothDamp
+
+    void Update()
     {
-        float distanceToPlayerSqr = (transform.position - player.position).sqrMagnitude;
-        float followRangeSqr = followRange * followRange;
-        float loseSightRangeSqr = loseSightRange * loseSightRange;
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-        if (distanceToPlayerSqr <= followRangeSqr)
+        // ตรวจสอบระยะห่างระหว่างศัตรูกับผู้เล่น
+        if (distanceToPlayer <= followRange)
         {
             isFollowing = true;
         }
-        else if (distanceToPlayerSqr > loseSightRangeSqr)
+        else if (distanceToPlayer > loseSightRange)
         {
             isFollowing = false;
         }
 
+        // การกระทำของศัตรูตามสถานะ
         if (isFollowing)
         {
-            FollowPlayer(distanceToPlayerSqr);
+            FollowPlayer(distanceToPlayer);
+            Sharkanim.SetBool("fast", true); // เล่นแอนิเมชัน "fast"
         }
         else
         {
             Wander();
+            Sharkanim.SetBool("fast", false); // หยุดเล่นแอนิเมชัน "fast"
         }
     }
 
-    private void FollowPlayer(float distanceToPlayerSqr)
+    private void FollowPlayer(float distanceToPlayer)
     {
         // คำนวณทิศทางไปยังผู้เล่น
         Vector3 direction = (player.position - transform.position).normalized;
 
         // เพิ่มความเร็วเมื่อเข้าใกล้ Player
         float currentSpeed = followSpeed;
-        if (distanceToPlayerSqr <= speedIncreaseRange * speedIncreaseRange)
+        if (distanceToPlayer <= speedIncreaseRange)
         {
             currentSpeed *= speedMultiplier;
         }
 
-        // ใช้ SmoothDamp เพื่อให้การเคลื่อนที่นุ่มนวล
-        Vector3 targetPosition = transform.position + direction * currentSpeed * Time.deltaTime;
-        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref currentVelocity, 0.2f);
+        // เคลื่อนที่ไปยังผู้เล่น
+        transform.position += direction * currentSpeed * Time.deltaTime;
 
-        // หมุนศัตรูให้หันหน้าหาผู้เล่นแบบ Smooth
+        // หมุนศัตรูให้หันหน้าหาผู้เล่น
         RotateTowards(direction);
     }
 
@@ -72,7 +76,7 @@ public class EnemyAIInWater : MonoBehaviour
     {
         timeSinceLastWander += Time.deltaTime;
 
-        // สุ่มเป้าหมายใหม่เมื่อถึงเวลา
+        // สุ่มเป้าหมายใหม่เมื่อถึงเวลา หรือศัตรูถึงเป้าหมายแล้ว
         if (timeSinceLastWander >= wanderDelay || Vector3.Distance(transform.position, wanderTarget) <= 1f)
         {
             wanderTarget = GetRandomWanderPosition();
@@ -82,11 +86,10 @@ public class EnemyAIInWater : MonoBehaviour
         // คำนวณทิศทางไปยังเป้าหมายสุ่ม
         Vector3 direction = (wanderTarget - transform.position).normalized;
 
-        // ใช้ SmoothDamp เพื่อให้การเคลื่อนที่ดูสมจริง
-        Vector3 targetPosition = transform.position + direction * wanderSpeed * Time.deltaTime;
-        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref currentVelocity, 0.3f);
+        // เคลื่อนที่ไปยังเป้าหมายสุ่ม
+        transform.position += direction * wanderSpeed * Time.deltaTime;
 
-        // หมุนศัตรูให้หันไปทางเป้าหมายสุ่มแบบ Smooth
+        // หมุนศัตรูให้หันหน้าไปทางเป้าหมายสุ่ม
         RotateTowards(direction);
     }
 
@@ -94,7 +97,7 @@ public class EnemyAIInWater : MonoBehaviour
     {
         // สุ่มตำแหน่งในระยะ wanderRadius
         Vector3 randomDirection = Random.insideUnitSphere * wanderRadius;
-        randomDirection.y = 0; // เคลื่อนที่เฉพาะในระนาบ XY
+        randomDirection.y = 0; // ให้เคลื่อนที่เฉพาะบนระนาบ XY (พื้นผิวน้ำ)
         return transform.position + randomDirection;
     }
 

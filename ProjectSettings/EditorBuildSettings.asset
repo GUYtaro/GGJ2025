@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: "Assets/scenes \u0E02\u0E2D\u0E07\u0E17\u0E38\u0E01\u0E04\u0E19/Start.unity"
+    path: "Assets/scenes \u0E02\u0E2D\u0E07\u0E17\u0E38\u0E01\u0E04\u0E19/Game/Start.unity"
     guid: a57347a967c407e49919aaa0f53886d0
   - enabled: 1
     path: "Assets/scenes \u0E02\u0E2D\u0E07\u0E17\u0E38\u0E01\u0E04\u0E19/Mewscene.unity"
@@ -18,8 +18,17 @@ EditorBuildSettings:
     path: "Assets/scenes \u0E02\u0E2D\u0E07\u0E17\u0E38\u0E01\u0E04\u0E19/Game/GameLeveOne.unity"
     guid: f025e43e39844674d86d12498cd38615
   - enabled: 1
+    path: "Assets/scenes \u0E02\u0E2D\u0E07\u0E17\u0E38\u0E01\u0E04\u0E19/Game/GameOver.unity"
+    guid: 565ce1bab90ac7a45a4919dc02ee0d79
+  - enabled: 1
     path: "Assets/scenes \u0E02\u0E2D\u0E07\u0E17\u0E38\u0E01\u0E04\u0E19/forplayscene1.unity"
     guid: 46f59284cc325f14aa5c1ceedef0a5e9
+  - enabled: 1
+    path: "Assets/scenes \u0E02\u0E2D\u0E07\u0E17\u0E38\u0E01\u0E04\u0E19/Game/Cutscene.unity"
+    guid: 293c25c618337204ca9bddb961fcc6f9
+  - enabled: 1
+    path: "Assets/scenes \u0E02\u0E2D\u0E07\u0E17\u0E38\u0E01\u0E04\u0E19/Game/Ending.unity"
+    guid: 3168c33d3601d1e4f8bd3bfee2452c73
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

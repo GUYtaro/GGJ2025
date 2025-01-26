@@ -2,42 +2,72 @@
 
 public class attack : MonoBehaviour
 {
-    public float damage = 20f; // ความเสียหายที่ศัตรูทำได้
-    public float attackCooldown = 1.5f; // ระยะเวลาระหว่างการโจมตีแต่ละครั้ง
+    [Header("Attack Settings")]
+    public float damage = 20f; // Damage dealt by the shark
+    public float attackCooldown = 1.5f; // Time between attacks
 
-    private float lastAttackTime; // เวลาโจมตีครั้งล่าสุด
+    private float lastAttackTime; // Last attack timestamp
+    private PlayerHealth playerHealth; // Reference to the PlayerHealth script
 
-    public GameObject currentObjec;
+    [Header("Audio Settings")]
+    public AudioSource attackSound; // AudioSource for the attack sound
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.gameObject);
-        currentObjec = other.gameObject;
         if (other.CompareTag("Player"))
         {
-            TryAttack(other);
+            Debug.Log("Player entered attack range");
+            playerHealth = other.GetComponent<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                TryAttack(); // Attack immediately upon entering range
+            }
+            else
+            {
+                Debug.LogWarning("PlayerHealth not found on Player!");
+            }
         }
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && playerHealth != null)
         {
-            TryAttack(other);
+            TryAttack(); // Attack while staying in range
         }
     }
 
-    private void TryAttack(Collider player)
+    private void TryAttack()
     {
         if (Time.time >= lastAttackTime + attackCooldown)
         {
-            PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
-            if (playerHealth != null)
-            {
-                playerHealth.TakeDamage(damage);
-                Debug.Log("Enemy attacked Player!");
-                lastAttackTime = Time.time; // บันทึกเวลาโจมตี
-            }
+            Debug.Log("TryAttack called");
+
+            // Apply damage
+            playerHealth.TakeDamage(damage);
+            Debug.Log($"Damage applied to player: {damage}");
+
+            // Play attack sound
+            PlayAttackSound();
+
+            // Record the time of this attack
+            lastAttackTime = Time.time;
+        }
+        else
+        {
+            Debug.Log("Attack on cooldown");
+        }
+    }
+
+    private void PlayAttackSound()
+    {
+        if (attackSound != null)
+        {
+            attackSound.Play(); // Play the attack sound
+        }
+        else
+        {
+            Debug.LogWarning("No attack sound assigned!");
         }
     }
 }

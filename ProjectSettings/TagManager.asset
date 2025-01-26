@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Collectible
   - GGJ
+  - Bubble
+  - End
   layers:
   - Default
   - TransparentFX

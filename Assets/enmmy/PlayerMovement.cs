@@ -1,12 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerMovement : MonoBehaviour
+public class FirstPersonMovement : MonoBehaviour
 {
     public Animator animator;
-    public Rigidbody rb;
-    public float maxSpeed = 5f;
-    public float speed;
+    public Transform cameraTransform; // Reference for camera position and rotation
+    public float moveSpeed = 5f;      // Movement speed
+    public float verticalSpeed = 3f; // Speed for moving up/down
+    public float rotationSpeed = 300f; // Rotation speed
 
     [Header("Stamina Settings")]
     public float maxStamina = 100f;
@@ -15,98 +16,110 @@ public class PlayerMovement : MonoBehaviour
     public float staminaRegen = 5f;
     public float regenDelay = 2f;
 
-    private float regenTimer;
-    public float minSpeedMultiplier = 0.5f;
-
     [Header("UI")]
     public Scrollbar staminaBar;
 
-    [Header("Rotation Settings")]
-    public float rotationSpeed = 10f;
+    [Header("Audio Settings")]
+    public AudioSource movementSound;   // AudioSource for movement
+    public AudioSource stopSound;       // AudioSource for stop sound
 
-    private bool isMoving;
+    private float regenTimer;
+    private float verticalRotation = 0f; // Vertical rotation of the camera
+    private bool isMoving = false;       // Tracks if the player is moving
 
     void Start()
     {
+        // Initialize stamina
         currentStamina = maxStamina;
-        speed = maxSpeed;
+
+        // Hide and lock the cursor
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()
     {
-        // รับ Input การเคลื่อนที่
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
+        HandleMovement();      // Handle player movement
+        HandleMouseRotation(); // Handle camera rotation
+        RegenerateStamina();   // Regenerate stamina
+        UpdateStaminaBar();    // Update the stamina bar
+    }
+
+    void HandleMovement()
+    {
+        // Get movement input
+        float moveX = Input.GetAxis("Horizontal"); // Left/Right
+        float moveZ = Input.GetAxis("Vertical");   // Forward/Backward
         float moveY = 0f;
 
-        if (Input.GetKey(KeyCode.Space)) moveY = 1f;       // ลอยขึ้น
-        if (Input.GetKey(KeyCode.LeftShift)) moveY = -1f;  // ลอยลง
+        // Handle vertical movement
+        if (Input.GetKey(KeyCode.Space)) moveY = verticalSpeed;        // Move up
+        if (Input.GetKey(KeyCode.LeftShift)) moveY = -verticalSpeed;   // Move down
 
-        Vector3 movement = new Vector3(moveX, moveY, moveZ);
+        // Calculate movement vector
+        Vector3 movement = (cameraTransform.right * moveX + cameraTransform.forward * moveZ + Vector3.up * moveY).normalized;
 
-        if (movement.sqrMagnitude > 0.01f && currentStamina > 0)
+        // Handle stamina and movement
+        if (movement.magnitude > 0.1f && currentStamina > 0)
         {
-            // เคลื่อนที่
-            MovePlayer(movement);
+            currentStamina -= staminaDrain * Time.deltaTime;
+            currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
+            regenTimer = 0f;
+
+            // Move the player
+            transform.Translate(movement * moveSpeed * Time.deltaTime, Space.World);
+
+            // Play movement animation
+            animator.SetBool("swim", true);
+            animator.SetBool("idle", false);
+
+            // Play movement sound
+            if (!isMoving)
+            {
+                isMoving = true;
+                PlayMovementSound();
+            }
         }
         else
         {
-            StopPlayer();
-        }
+            // Stop movement animation
+            animator.SetBool("swim", false);
+            animator.SetBool("idle", true);
 
-        // ฟื้นฟู Stamina เมื่อไม่เคลื่อนที่
-        RegenerateStamina();
-
-        // อัปเดต Scrollbar
-        UpdateStaminaBar();
-    }
-
-    void MovePlayer(Vector3 movement)
-    {
-        movement.Normalize();
-        rb.linearVelocity = movement * speed;
-
-        RotateTowards(movement);
-
-        currentStamina -= staminaDrain * Time.deltaTime;
-        currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
-
-        regenTimer = 0f;
-
-        animator.SetBool("swim", true);
-        animator.SetBool("idle", false);
-
-        isMoving = true;
-    }
-
-    void StopPlayer()
-    {
-        rb.linearVelocity = Vector3.zero;
-        animator.SetBool("swim", false);
-        animator.SetBool("idle", true);
-        isMoving = false;
-    }
-
-    void RegenerateStamina()
-    {
-        if (!isMoving)
-        {
-            regenTimer += Time.deltaTime;
-
-            if (regenTimer >= regenDelay && currentStamina < maxStamina)
+            // Stop movement sound
+            if (isMoving)
             {
-                currentStamina += staminaRegen * Time.deltaTime;
-                currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
+                isMoving = false;
+                StopMovementSound();
             }
         }
     }
 
-    void RotateTowards(Vector3 direction)
+    void HandleMouseRotation()
     {
-        if (direction.sqrMagnitude > 0.01f)
+        // Get mouse input
+        float mouseX = Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * rotationSpeed * Time.deltaTime;
+
+        // Rotate the player horizontally
+        transform.Rotate(Vector3.up * mouseX);
+
+        // Rotate the camera vertically
+        verticalRotation -= mouseY;
+        verticalRotation = Mathf.Clamp(verticalRotation, -80f, 80f);
+        cameraTransform.localEulerAngles = new Vector3(verticalRotation, 0f, 0f);
+    }
+
+    void RegenerateStamina()
+    {
+        if (currentStamina < maxStamina && regenTimer >= regenDelay)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z), Vector3.up);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            currentStamina += staminaRegen * Time.deltaTime;
+            currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
+        }
+        else if (currentStamina < maxStamina)
+        {
+            regenTimer += Time.deltaTime;
         }
     }
 
@@ -115,6 +128,30 @@ public class PlayerMovement : MonoBehaviour
         if (staminaBar != null)
         {
             staminaBar.size = currentStamina / maxStamina;
+        }
+    }
+
+    void PlayMovementSound()
+    {
+        if (movementSound != null && !movementSound.isPlaying)
+        {
+            movementSound.loop = true; // Ensure the sound loops while moving
+            movementSound.Play();
+        }
+    }
+
+    void StopMovementSound()
+    {
+        if (movementSound != null && movementSound.isPlaying)
+        {
+            movementSound.loop = false; // Stop looping
+            movementSound.Stop();
+
+            // Play stop sound if assigned
+            if (stopSound != null)
+            {
+                stopSound.Play();
+            }
         }
     }
 }

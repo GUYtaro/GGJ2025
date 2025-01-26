@@ -50,7 +50,7 @@ public class ScoreManager : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = $"Score: {score}/{maxScore}";
+            scoreText.text = $"Trash : {score}/{maxScore}";
         }
         else
         {

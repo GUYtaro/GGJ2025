@@ -1,73 +1,59 @@
 ﻿using UnityEngine;
-using UnityEngine.UI; // สำหรับ UI Scrollbar
-
+using UnityEngine.UI; // สำหรับ Scrollbar
+using UnityEngine.SceneManagement; // สำหรับการเปลี่ยน Scene
 public class PlayerHealth : MonoBehaviour
 {
-    public float maxHealth = 100f;       // พลังชีวิตสูงสุด
-    public float currentHealth;          // พลังชีวิตปัจจุบัน
-    public Animator animator;            // ตัวควบคุมแอนิเมชัน
-    public GameObject deathEffect;       // เอฟเฟกต์เมื่อผู้เล่นตาย
+    [Header("Health Settings")]
+    public float maxHealth = 100f; // พลังชีวิตสูงสุด
+    public float currentHealth;  // พลังชีวิตปัจจุบัน
 
     [Header("UI")]
-    public Scrollbar healthBar;          // Scrollbar สำหรับแสดงพลังชีวิต
+    public string GameOver = "GameOver";
+    public Scrollbar healthBar; // Scrollbar แสดงพลังชีวิต
 
     void Start()
     {
-        currentHealth = maxHealth;       // ตั้งค่าเริ่มต้นให้พลังชีวิตเต็ม
-        UpdateHealthBar();               // อัปเดต Scrollbar
+        currentHealth = maxHealth; // ตั้งค่าพลังชีวิตเริ่มต้น
+        UpdateHealthBar(); // อัปเดต Scrollbar
     }
 
     public void TakeDamage(float damage)
     {
-        currentHealth -= damage;         // ลดพลังชีวิต
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // จำกัดค่าพลังชีวิตให้อยู่ในช่วง 0 ถึง maxHealth
+        currentHealth -= damage; // ลดพลังชีวิต
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // จำกัดค่าพลังชีวิตให้อยู่ในช่วง 0 - maxHealth
 
-        Debug.Log($"Player Health: {currentHealth}");
+        Debug.Log($"Player health: {currentHealth}");
 
-        // ตรวจสอบว่าผู้เล่นตายหรือไม่
+        UpdateHealthBar(); // อัปเดต Scrollbar
+
         if (currentHealth <= 0)
         {
             Die();
         }
-
-        UpdateHealthBar(); // อัปเดต Scrollbar
     }
 
     public void Heal(float healAmount)
     {
-        currentHealth += healAmount;     // ฟื้นฟูพลังชีวิต
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // จำกัดค่าพลังชีวิตให้อยู่ในช่วง 0 ถึง maxHealth
+        currentHealth += healAmount; // ฟื้นฟูพลังชีวิต
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // จำกัดค่าพลังชีวิตให้อยู่ในช่วง 0 - maxHealth
 
-        Debug.Log($"Player Healed: {currentHealth}");
+        Debug.Log($"Player healed: {currentHealth}");
 
         UpdateHealthBar(); // อัปเดต Scrollbar
-    }
-
-    void Die()
+    }           
+    private void Die()
     {
         Debug.Log("Player is dead!");
-
-        // เล่นแอนิเมชันตาย
-        if (animator != null)
-        {
-            animator.SetTrigger("Die");
-        }
-
-        // สร้างเอฟเฟกต์การตาย
-        if (deathEffect != null)
-        {
-            Instantiate(deathEffect, transform.position, Quaternion.identity);
-        }
-
-        // ปิดการใช้งานผู้เล่น
-        gameObject.SetActive(false);
+        SceneManager.LoadScene(GameOver);
+        // เพิ่มระบบตาย เช่น Restart เกมหรือแสดงหน้าจอ Game Over
+        gameObject.SetActive(false); // ปิดการใช้งานผู้เล่น
     }
 
-    void UpdateHealthBar()
+    private void UpdateHealthBar()
     {
         if (healthBar != null)
         {
-            healthBar.size = currentHealth / maxHealth; // อัปเดต Scrollbar
+            healthBar.size = currentHealth / maxHealth; // อัปเดต Scrollbar ให้ตรงกับพลังชีวิต
         }
     }
 }

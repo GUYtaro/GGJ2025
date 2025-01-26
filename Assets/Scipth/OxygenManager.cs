@@ -1,18 +1,23 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement; // For scene management
 
 public class OxygenManager : MonoBehaviour
 {
-    public static OxygenManager Instance; // Singleton สำหรับเข้าถึงจากที่อื่น
+    public static OxygenManager Instance; // Singleton for global access
 
-    public Slider oxygenSlider;  // Slider แสดงออกซิเจน
-    private float oxygen = 100f; // ค่าออกซิเจนเริ่มต้น
-    private float maxOxygen = 100f; // ค่าออกซิเจนสูงสุด
-    private float oxygenDepletionRate = 0.5f; // ลดออกซิเจน 0.5 ทุกวินาที
+    [Header("Oxygen Settings")]
+    public Scrollbar oxygenScrollbar;  // Scrollbar to display oxygen level
+    private float oxygen = 100f;       // Starting oxygen value
+    private float maxOxygen = 100f;    // Maximum oxygen value
+    private float oxygenDepletionRate = 3f; // Oxygen depletion rate per second
+
+    [Header("Scene Settings")]
+    public string gameOverScene = "GameOver"; // Scene to load when oxygen runs out
 
     private void Awake()
     {
-        // สร้าง Singleton
+        // Create Singleton instance
         if (Instance == null)
         {
             Instance = this;
@@ -25,40 +30,52 @@ public class OxygenManager : MonoBehaviour
 
     private void Start()
     {
-        if (oxygenSlider != null)
+        if (oxygenScrollbar != null)
         {
-            oxygenSlider.maxValue = maxOxygen;
-            oxygenSlider.value = oxygen;
+            UpdateScrollbar(); // Initialize the scrollbar
         }
     }
 
     private void Update()
     {
-        // ลดค่าออกซิเจนทุกวินาที
+        // Decrease oxygen every second
         oxygen -= oxygenDepletionRate * Time.deltaTime;
-        oxygen = Mathf.Clamp(oxygen, 0, maxOxygen); // จำกัดค่าไม่ให้น้อยกว่า 0 หรือเกิน maxOxygen
+        oxygen = Mathf.Clamp(oxygen, 0, maxOxygen); // Ensure oxygen stays within valid range
 
-        if (oxygenSlider != null)
+        if (oxygenScrollbar != null)
         {
-            oxygenSlider.value = oxygen;
+            UpdateScrollbar(); // Update scrollbar value
         }
 
         if (oxygen <= 0)
         {
             Debug.Log("Player has run out of oxygen!");
+            ChangeScene(); // Trigger scene change when oxygen reaches zero
         }
     }
 
     public void AddOxygen(float amount)
     {
-        oxygen += amount;
-        oxygen = Mathf.Clamp(oxygen, 0, maxOxygen); // จำกัดค่าออกซิเจนไม่ให้เกิน maxOxygen
+        oxygen += amount; // Increase oxygen
+        oxygen = Mathf.Clamp(oxygen, 0, maxOxygen); // Ensure oxygen doesn't exceed the maximum
 
-        if (oxygenSlider != null)
+        if (oxygenScrollbar != null)
         {
-            oxygenSlider.value = oxygen;
+            UpdateScrollbar();
         }
 
         Debug.Log("Oxygen increased by: " + amount);
+    }
+
+    private void UpdateScrollbar()
+    {
+        // Update scrollbar to reflect current oxygen level
+        oxygenScrollbar.size = oxygen / maxOxygen;
+    }
+
+    private void ChangeScene()
+    {
+        // Load the game over scene
+        SceneManager.LoadScene(gameOverScene);
     }
 }
